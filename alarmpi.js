@@ -21,6 +21,14 @@ app.get('/', function(req, res) {
   res.render('index.html');
 });
 
+app.get('/api/check', function(req, res) {
+  // corresponds to "night" mode in Homebridge
+  var state = "2";
+  res.setHeader('Content-Type', 'text/plain');
+  res.end(state);
+  console.log('returning state: ' + state);
+});
+
 app.get('/api/click_off', function(req, res) {
   res.setHeader('Content-Type', 'application/json');
   res.end(JSON.stringify({ status: 'done' }));
