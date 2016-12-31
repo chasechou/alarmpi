@@ -13,9 +13,16 @@ app.set('views', path.join(__dirname, 'views'));
 app.engine('html', require('ejs').renderFile);
 
 app.use(logger('dev'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+//app.use(bodyParser.json());
+//app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
+
+var STATES = {
+  'home': '0',
+  'away': '1',
+  'night': '2',
+  'off': '3',
+};
 
 app.get('/', function(req, res) {
   res.render('index.html');
@@ -23,29 +30,36 @@ app.get('/', function(req, res) {
 
 app.get('/api/check', function(req, res) {
   // corresponds to "night" mode in Homebridge
-  var state = "2";
+  var state = 'night';
   res.setHeader('Content-Type', 'text/plain');
-  res.end(state);
-  console.log('returning state: ' + state);
+  res.end(STATES[state]);
+  console.log('returning state: ' + state + '(' + STATES[state] + ')');
 });
 
 app.get('/api/click_off', function(req, res) {
-  res.setHeader('Content-Type', 'application/json');
-  res.end(JSON.stringify({ status: 'done' }));
+  var state = 'off';
+  res.setHeader('Content-Type', 'text/plain');
+  res.end(STATES[state]);
   outputSequence(3, 5, '10', 1000);
+  console.log('returning state: ' + state + '(' + STATES[state] + ')');
 });
 
 app.get('/api/click_away', function(req, res) {
-  res.setHeader('Content-Type', 'application/json');
-  res.end(JSON.stringify({ status: 'done' }));
+  var state = 'away';
+  res.setHeader('Content-Type', 'text/plain');
+  res.end(STATES[state]);
   outputSequence(4, 7, '10', 1000);
+  console.log('returning state: ' + state + '(' + STATES[state] + ')');
 });
 
 app.get('/api/click_home', function(req, res) {
-  res.setHeader('Content-Type', 'application/json');
-  res.end(JSON.stringify({ status: 'done' }));
+  // home mode requires simultaneous push of both off+away buttons on remote
+  var state = 'home';
+  res.setHeader('Content-Type', 'text/plain');
+  res.end(STATES[state]);
   outputSequence(3, 5, '10', 1000);
   outputSequence(4, 7, '10', 1000);
+  console.log('returning state: ' + state + '(' + STATES[state] + ')');
 });
 
 function outputSequence(gpio_pin, pin, seq, timeout) {
